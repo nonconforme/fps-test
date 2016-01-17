@@ -3,7 +3,7 @@ extends RigidBody
 var body = 0.0;
 var pitch = 0.0;
 
-var view_sensitivity = 0.3;
+var view_sensitivity = 0.1;
 var focus_view_sensv = 0.1;
 var walk_speed = 5.0;
 var run_multiplier = 1.5;
@@ -31,13 +31,15 @@ var bob_amount = 0.005;
 
 var shooting = false;
 var shoot_delay = 0.0;
-var gun_clip = 30.0;
+var gun_clip = 100.0;
 var gun_cartridge = gun_clip;
-var gun_ammo = 120.0;
+var gun_ammo = 600.0;
 
 var gun_pos = Vector3();
 
 var shadow_enabled = false;
+
+onready var gun_decal = load("res://assets/scenes/gun_decal.scn");
 
 func _input(ie):
 	if freeze_movement:
@@ -197,6 +199,8 @@ func _integrate_forces(state):
 
 func _process(delta):
 	get_node("/root/main/gui/ingame/playerinfo/bg1/ammo").set_text(str(gun_clip,"/",gun_ammo));
+	get_node("/root/main/gui/ingame/map_overview").player_pos = Vector2(get_global_transform().origin.x, get_global_transform().origin.z);
+	get_node("/root/main/gui/ingame/map_overview").player_rot = get_node("body").get_rotation().y;
 	
 	if is_moving && !shooting:
 		var move_speed = 5.0;
@@ -233,7 +237,7 @@ func _process(delta):
 func shoot():
 	if shoot_delay > 0.0 || gun_clip <= 0:
 		return;
-	shoot_delay = 60.0/400.0;
+	shoot_delay = 60.0/600.0;
 	
 	gun_clip -= 1;
 	
@@ -253,6 +257,11 @@ func shoot():
 			if collider.is_in_group("player"):
 				print("player ",collider.id," attacked.");
 			collider.apply_impulse(result["position"]-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass());
+		
+		if collider != null && collider extends StaticBody:
+			var decal = gun_decal.instance();
+			decal.look_at_from_pos(result["position"], result["position"]+result["normal"], Vector3(1,1,1));
+			get_node("/root/main/env").add_child(decal);
 
 func _enter_tree():
 	get_node("body/camera").make_current();

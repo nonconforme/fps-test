@@ -107,7 +107,9 @@ func _process(delta):
 			if data[0] == NET_CLIENT_CONNECTED:
 				var pid = data[1];
 				
-				env.add_scene("res:///assets/scenes/vplayer.scn").set_name("vplayer_"+str(pid));
+				var scn = env.add_scene("res:///assets/scenes/vplayer.scn");
+				scn.set_name("vplayer_"+str(pid));
+				get_node("/root/main/gui/ingame/map_overview").add_object(scn);
 			
 			if data[0] == NET_CLIENT_DISCONNECTED:
 				var pid = data[1];
@@ -119,7 +121,9 @@ func _process(delta):
 					if i[0] == SRV_DATA_PLAYER:
 						var pid = i[1];
 						
-						env.add_scene("res:///assets/scenes/vplayer.scn").set_name("vplayer_"+str(pid));
+						var scn = env.add_scene("res:///assets/scenes/vplayer.scn");
+						scn.set_name("vplayer_"+str(pid));
+						get_node("/root/main/gui/ingame/map_overview").add_object(scn);
 			
 			if data[0] == NET_UPDATE:
 				for i in data[1]:

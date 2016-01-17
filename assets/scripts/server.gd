@@ -63,6 +63,8 @@ func host(port = 3000):
 	packet = GDNetHost.new();
 	var err = packet.bind(address);
 	
+	print(err);
+	
 	if !err:
 		hosted = true;
 		on_server_start();
